@@ -1,7 +1,9 @@
-WIDTH = 400
+from pygame import Color
+
+WIDTH = 8*60
 HEIGHT = WIDTH
-LIGHT = (240,217,181)
-DARK = (181,136,99)
+LIGHT = Color(240,217,181)
+DARK = Color(181,136,99)
 SIZE = WIDTH/8
 
 rows = 'ABCDEFGH'
