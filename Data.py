@@ -13,7 +13,7 @@ lookup = {'A': 1, "1": 8, 'B': 2, "2": 7, 'C': 3, "3": 6, 'D': 4, "4": 5,
 
 white_pieces = [["rook", "A1", "white"], ["bishop", "B1", "white"], ["knight", "C1", "white"],
          ["queen", "D1", "white"], ["king", "E1", "white"], ["bishop", "F1", "white"],
-         ["knight", "G1", "white"], ["rook", "H1", "white"]]
+         ["knight", "F3", "white"], ["rook", "H1", "white"]]
 
 white_pawns = [["pawn", f"{rows[i]}2", "white"] for i in range(8)]
 black_pawns = [["pawn", f"{rows[i]}7", "black"] for i in range(8)]
