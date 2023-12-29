@@ -29,8 +29,11 @@ class Board:
         self.tiles = {tile_keys(i):[tile_vals(i//8,i%8), None] for i in range(64)}
         self.pieces = []
         self.surface = pygame.display.get_surface()
+        self.lopieces = []
         for item in start:
-            self.tiles[item[1]][1] = (Piece(item[0], item[1], item[2]))
+            piece = Piece(item[0], item[1], item[2])
+            self.tiles[item[1]][1] = piece
+            self.lopieces.append(piece)
 
 
     def render(self):
@@ -76,7 +79,9 @@ class Player:
     def __init__(self, board: Board, color: str) -> None:
         self.board = board
         self.color = color
-        self.piece = None
+        self.held_piece = None
+        self.lopieces = self.get_col_pieces()
+        print(self.lopieces)
         self.surface = pygame.display.get_surface()
 
         #For moving pieces
@@ -88,27 +93,37 @@ class Player:
         to_lift = self.board.tiles[pos][1]
         self.go_back = pos
         if to_lift is not None and to_lift.color == self.color:
-            self.piece = to_lift
+            self.held_piece = to_lift
             self.board.tiles[pos][1] = None
-        return self.piece
+        return self.held_piece
 
     def put_down(self) -> bool: #Puts down piece, returns True if the piece is in a new position
         pos = mouse_to_square()
         if pos in self.valid_positions:
-            self.board.tiles[pos][1] = Piece(self.piece.type, pos, self.piece.color, self.piece.moves + 1)
-            print(self.piece.moves)
+            updated_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
+            self.board.tiles[pos][1] = updated_piece
+            self.lopieces.remove(self.held_piece)
+            self.lopieces.append(updated_piece)
+            print(self.lopieces)
             ret_val = True
         else:
-            self.board.tiles[self.go_back][1] = Piece(self.piece.type, self.go_back, self.piece.color)
+            self.board.tiles[self.go_back][1] = Piece(self.held_piece.type, self.go_back, self.held_piece.color)
             ret_val = False
-        self.piece = None
+        self.held_piece = None
         #self.valid_positions = random.choice([*self.board.tiles])
         return ret_val
 
+    def get_col_pieces(self):
+        piece_list = []
+        for piece in self.board.lopieces:
+            if piece.color == self.color:
+                piece_list.append(piece)
+        return piece_list
+
     def display_motion(self) -> None:
-        if self.piece is not None:
-            self.piece.rect.center = mouse_to_square(True)
-            self.surface.blit(self.piece.image, self.piece.rect)
+        if self.held_piece is not None:
+            self.held_piece.rect.center = mouse_to_square(True)
+            self.surface.blit(self.held_piece.image, self.held_piece.rect)
 
     def mouse_over(self):
         for tile in self.board.tiles.values():
