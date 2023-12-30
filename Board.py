@@ -60,7 +60,7 @@ class Tile:
         self.image.fill(self.col)
 
         self.rect = self.image.get_rect()
-        print(position)
+        #print(position)
         self.rect.move_ip(position[0], position[1])
 
     def highlight(self, color):

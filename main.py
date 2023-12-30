@@ -13,7 +13,7 @@ class Game:
         self.board = Board()
         self.white = Player(self.board, 'white')
         self.black = Player(self.board, 'black')
-        print(self.board.tiles)
+        #print(self.board.tiles)
         self.clock = pygame.time.Clock()
         self.show_piece = False
 
