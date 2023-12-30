@@ -41,7 +41,7 @@ class Game:
 
             self.screen.fill('blue')
             self.board.render()
-            self.white.mouse_over()
+            self.player.color_tiles()
             if self.show_piece:
                 self.player.display_motion()
             self.clock.tick(60)

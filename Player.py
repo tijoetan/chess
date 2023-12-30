@@ -52,13 +52,17 @@ class Player:
             self.held_piece.rect.center = mouse_to_square(True)
             self.surface.blit(self.held_piece.image, self.held_piece.rect)
 
-    def mouse_over(self):
-        for tile in self.board.tiles.values():
-            tile[0].remove_highlight()
+    def color_tiles(self):
+        for tile in zip(self.board.tiles.keys(), self.board.tiles.values()):
+            tile[1][0].remove_highlight()
+            if tile[0] in self.valid_positions:
+                tile[1][0].highlight('green')
 
-        square = mouse_to_square()
-        self.board.tiles[square][0].highlight('brown')
+        if self.held_piece is None:
+            square = mouse_to_square()
+            self.board.tiles[square][0].highlight('brown')
 
     def update_moves(self):
         self.move_dict = get_moves(self.board, self.color)
+        self.valid_positions = []
         print(self.move_dict)
