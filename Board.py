@@ -1,14 +1,14 @@
 from Data import *
 import pygame
 from files import find_piece_image
-import random
+
 
 
 
 def pos_to_coords(pos: str) -> (int, int):
     return lookup[pos[0]] * SIZE - SIZE/2, lookup[pos[1]] * SIZE - SIZE/2
 def coords_to_pos(coords: (int, int)) -> str:
-    return rows[int(coords[0]//SIZE)] + col[int(coords[1]//SIZE)]
+    return rows[int(coords[0]//SIZE)] + cols[int(coords[1] // SIZE)]
 
 
 def mouse_to_square(just_coords = False):
@@ -23,7 +23,7 @@ class Board:
         def tile_vals(n, i):
             return Tile((n*SIZE, i* SIZE), (LIGHT if ((n+i)%2==0) else DARK))
         def tile_keys(i):
-            return rows[i//8] + col[i%8]
+            return rows[i//8] + cols[i % 8]
 
         self.group = pygame.sprite.Group()
         self.tiles = {tile_keys(i):[tile_vals(i//8,i%8), None] for i in range(64)}
@@ -34,6 +34,9 @@ class Board:
             piece = Piece(item[0], item[1], item[2])
             self.tiles[item[1]][1] = piece
             self.lopieces.append(piece)
+
+    def apply_move(self, piece, move):  #update board
+        return
 
 
     def render(self):
@@ -131,6 +134,8 @@ class Player:
 
         square = mouse_to_square()
         self.board.tiles[square][0].highlight('brown')
+
+
 
 
 
