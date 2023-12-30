@@ -1,5 +1,6 @@
 from Data import *
-from Board import Board, Player
+from Board import Board
+from Player import Player
 import pygame
 import sys
 
@@ -21,6 +22,7 @@ class Game:
     def switch(self, player):
         return self.white if player == self.black else self.black
     def run(self):
+        self.player.update_moves()
         while True:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -32,6 +34,7 @@ class Game:
                         self.show_piece = False
                         if x:
                             self.player = self.switch(self.player)
+                            self.player.update_moves()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.show_piece = True if self.player.pickup() is not None else False
 

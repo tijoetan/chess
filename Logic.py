@@ -1,8 +1,7 @@
 import Data
 from Board import Board, Piece
 import pygame
-pygame.init()
-pygame.display.set_mode((200,200))
+
 
 def check_check(king: Piece, board: Board) -> bool: #Determines if given king is in check
     return
@@ -19,23 +18,39 @@ def king_fn(piece:Piece, board:Board):
                 continue
             else:
                 yield row+col
-# return result
+        # NEED castling
 
-print(king_fn(Piece('king', 'E1', 'white'), Board()))
 def queen_fn(piece: Piece, board:Board):
-    return 5
+    return []
 
 def pawn_fn(piece: Piece, board:Board):
-    return 4
+    row_ind, col_ind = Data.rows.index(piece.position[0]), Data.cols.index(piece.position[1])
+    direction = -1 if piece.color == 'white' else 1
+    advance_one = False
+    new_pos = [Data.rows[row_ind + i] + Data.cols[col_ind + direction]
+               for i in range(-1, 2) if row_ind + i in range(0,8)]
+    print(new_pos)
+    for pos in new_pos:
+        if pos[0] == piece.position[0] and board.tiles[pos][1] is None:
+            advance_one = True
+            yield pos
+        elif board.tiles[pos][1] is not None and board.tiles[pos][1].color != piece.color:
+            yield pos
+    double_spot = board.tiles[piece.position[0] + Data.cols[col_ind + 2*direction]][1]
+    if piece.moves == 0 and double_spot is None and advance_one:
+        yield piece.position[0] + Data.cols[col_ind + 2*direction]
+
+
+    # NEED en passant and promotion
 
 def bishop_fn(piece: Piece, board:Board):
-    return 3
+    return []
 
 def knight_fn(piece: Piece, board:Board):
-    return 2
+    return []
 
 def rook_fn(piece: Piece, board:Board):
-    return 1
+    return []
 
 opts = {'king':king_fn, 'queen': queen_fn, 'rook':rook_fn, 'bishop':bishop_fn, 'pawn':pawn_fn, 'knight': knight_fn}
 def get_moves(board:Board, col: str) -> dict[Piece:list[str]]:
@@ -52,10 +67,11 @@ def get_moves(board:Board, col: str) -> dict[Piece:list[str]]:
                 enm_pieces.append(tile[1])
                 if tile[1].type == 'king':
                     enm_king = tile[1]
+
     for piece in col_pieces:
-        moves[piece] = []
+        moves[piece.position] = []
         for candidate in opts[piece.type](piece, board):
-            moves[piece].append(candidate)
+            moves[piece.position].append(candidate)
     return moves
 
-print(get_moves(Board(), 'white'))
+#print(get_moves(Board(), 'black'))

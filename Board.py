@@ -2,9 +2,6 @@ from Data import *
 import pygame
 from files import find_piece_image
 
-
-
-
 def pos_to_coords(pos: str) -> (int, int):
     return lookup[pos[0]] * SIZE - SIZE/2, lookup[pos[1]] * SIZE - SIZE/2
 def coords_to_pos(coords: (int, int)) -> str:
@@ -27,7 +24,6 @@ class Board:
 
         self.group = pygame.sprite.Group()
         self.tiles = {tile_keys(i):[tile_vals(i//8,i%8), None] for i in range(64)}
-        self.pieces = []
         self.surface = pygame.display.get_surface()
         self.lopieces = []
         for item in start:
@@ -35,8 +31,19 @@ class Board:
             self.tiles[item[1]][1] = piece
             self.lopieces.append(piece)
 
-    def apply_move(self, piece, move):  #update board
-        return
+    def apply_move(self, move, piece=None, to_move=None):  #Either piece is given to be placed
+                                                           # or start square is given to move piece
+        new_board = self.tiles.copy()
+        def place_piece(piece: Piece, position: str) -> Board:
+            new_board[position][1] = Piece(piece.type, position, piece.color, piece.moves + 1)
+            return new_board
+        def shift_piece(start_pos, end_pos):
+            to_shift = new_board[start_pos][1]
+            new_board[end_pos][1] =  Piece(to_shift.type, end_pos, to_shift.color, to_shift.moves + 1)
+            new_board[start_pos][1] = None
+            return new_board
+        return place_piece(piece, move) if piece is not None else shift_piece(to_move,move)
+
 
 
     def render(self):
@@ -76,71 +83,3 @@ class Piece:
         #Enpassant + Castle params
         self.moves = moves
         self.stat = stat
-
-
-class Player:
-    def __init__(self, board: Board, color: str) -> None:
-        self.board = board
-        self.color = color
-        self.held_piece = None
-        self.lopieces = self.get_col_pieces()
-        print(self.lopieces)
-        self.surface = pygame.display.get_surface()
-
-        #For moving pieces
-        self.valid_positions = [*self.board.tiles]
-        self.go_back = 'A1'
-
-    def pickup(self) -> Piece: #Picks up piece at current square and returns piece
-        pos = mouse_to_square()
-        to_lift = self.board.tiles[pos][1]
-        self.go_back = pos
-        if to_lift is not None and to_lift.color == self.color:
-            self.held_piece = to_lift
-            self.board.tiles[pos][1] = None
-        return self.held_piece
-
-    def put_down(self) -> bool: #Puts down piece, returns True if the piece is in a new position
-        pos = mouse_to_square()
-        if pos in self.valid_positions:
-            updated_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
-            self.board.tiles[pos][1] = updated_piece
-            self.lopieces.remove(self.held_piece)
-            self.lopieces.append(updated_piece)
-            print(self.lopieces)
-            ret_val = True
-        else:
-            self.board.tiles[self.go_back][1] = Piece(self.held_piece.type, self.go_back, self.held_piece.color)
-            ret_val = False
-        self.held_piece = None
-        #self.valid_positions = random.choice([*self.board.tiles])
-        return ret_val
-
-    def get_col_pieces(self):
-        piece_list = []
-        for piece in self.board.lopieces:
-            if piece.color == self.color:
-                piece_list.append(piece)
-        return piece_list
-
-    def display_motion(self) -> None:
-        if self.held_piece is not None:
-            self.held_piece.rect.center = mouse_to_square(True)
-            self.surface.blit(self.held_piece.image, self.held_piece.rect)
-
-    def mouse_over(self):
-        for tile in self.board.tiles.values():
-            tile[0].remove_highlight()
-
-        square = mouse_to_square()
-        self.board.tiles[square][0].highlight('brown')
-
-
-
-
-
-
-
-
-
-
