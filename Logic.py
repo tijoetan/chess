@@ -1,17 +1,24 @@
 import Data
 from Board import Board, Piece
-import pygame
+
 
 def get_index(position):
-    return Data.rows.index(position[0]), Data.cols.index(position[1])
-def check_check(king: Piece, board: Board) -> bool: #Determines if given king is in check
+    return Data.cols.index(position[0]), Data.rows.index(position[1])
+
+
+def get_vertical(row_ind, col_ind):
+    return
+
+
+def check_check(king: Piece, board: Board) -> bool:  # Determines if given king is in check
 
     return
-def king_fn(piece:Piece, board:Board):
+
+
+def king_fn(piece: Piece, board: Board):
     row_ind, col_ind = get_index(piece.position)
-    new_cols = [Data.cols[col_ind + i] for i in range(-1, 2) if col_ind + i in range(0, 8)]
-    new_rows = [Data.rows[row_ind+i] for i in range(-1, 2) if row_ind + i in range(0,8)]
-    result = []
+    new_cols = [Data.rows[col_ind + i] for i in range(-1, 2) if col_ind + i in range(0, 8)]
+    new_rows = [Data.cols[row_ind + i] for i in range(-1, 2) if row_ind + i in range(0, 8)]
     for row in new_rows:
         for col in new_cols:
             if row + col == piece.position:
@@ -19,25 +26,39 @@ def king_fn(piece:Piece, board:Board):
             elif board.tiles[row + col][1] is not None and board.tiles[row + col][1].color == piece.color:
                 continue
             else:
-                yield row+col
-        # NEED castling
+                yield row + col
+    if piece.moves == 0:
+        horizontals = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
+        print(horizontals)
+        row = piece.position[1]
+        for lr in horizontals:
+            for col in lr:
+                tile = board.tiles[col + row][1]
+                if tile is None:
+                    print('empty square')
+                    continue
+                elif tile.type == 'rook' and tile.moves == 0:
+                    yield lr[1] + row + 'c'
+                else:
+                    break
 
-def queen_fn(piece: Piece, board:Board):
+
+def queen_fn(piece: Piece, board: Board):
     for diagonal in bishop_fn(piece, board):
         yield diagonal
     for linear in rook_fn(piece, board):
         yield linear
 
-def pawn_fn(piece: Piece, board:Board):
+
+def pawn_fn(piece: Piece, board: Board):
     row_ind, col_ind = get_index(piece.position)
     direction = -1 if piece.color == 'white' else 1
     advance_one = False
-    new_pos = [Data.rows[row_ind + i] + Data.cols[col_ind + direction]
-               for i in range(-1, 2) if row_ind + i in range(0,8)]
-    #print(new_pos)
+    new_pos = [Data.cols[row_ind + i] + Data.rows[col_ind + direction]
+               for i in range(-1, 2) if row_ind + i in range(0, 8)]
+    # print(new_pos)
     for pos in new_pos:
         if pos[0] == piece.position[0] and board.tiles[pos][1] is None:
-            print(f"you can go to {pos}")
             advance_one = True
             yield pos
 
@@ -46,15 +67,17 @@ def pawn_fn(piece: Piece, board:Board):
               pos[0] != piece.position[0]):
 
             yield pos
-    double_spot = board.tiles[piece.position[0] + Data.cols[col_ind + 2*direction]][1]
+    double_spot = board.tiles[piece.position[0] + Data.rows[col_ind + 2 * direction]][1]
     if piece.moves == 0 and double_spot is None and advance_one:
-        yield piece.position[0] + Data.cols[col_ind + 2*direction]
+        yield piece.position[0] + Data.rows[col_ind + 2 * direction]
 
     # NEED en passant and promotion
-def bishop_fn(piece: Piece, board:Board):
+
+
+def bishop_fn(piece: Piece, board: Board):
     row_ind, col_ind = get_index(piece.position)
-    vertical = [Data.cols[:col_ind][::-1], Data.cols[col_ind+1:]]
-    horizontal = [Data.rows[:row_ind][::-1], Data.rows[row_ind+1:]]
+    vertical = [Data.rows[:col_ind][::-1], Data.rows[col_ind + 1:]]
+    horizontal = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
     for vert in vertical:
         for hori in horizontal:
             for direction in zip(hori, vert):
@@ -67,36 +90,34 @@ def bishop_fn(piece: Piece, board:Board):
                     yield direction[0] + direction[1]
 
 
-def knight_fn(piece: Piece, board:Board):
+def knight_fn(piece: Piece, board: Board):
     row_ind, col_ind = get_index(piece.position)
-    verticals = [[Data.cols[col_ind + 2*i] for i in range(-1,2,2) if col_ind + 2*i in range(0,8)]]
-    horizontals = [[Data.rows[row_ind + 2*i] for i in range(-1,2,2) if row_ind + 2*i in range(0,8)]]
+    verticals = [[Data.rows[col_ind + 2 * i] for i in range(-1, 2, 2) if col_ind + 2 * i in range(0, 8)]]
+    horizontals = [[Data.cols[row_ind + 2 * i] for i in range(-1, 2, 2) if row_ind + 2 * i in range(0, 8)]]
 
     for direction in verticals + horizontals:
         for step in direction:
             if direction in verticals:
-                left = Data.rows[row_ind + 1] + step if row_ind + 1 in range(0,8) else None
-                right = Data.rows[row_ind - 1] + step if row_ind - 1 in range(0, 8) else None
+                left = Data.cols[row_ind + 1] + step if row_ind + 1 in range(0, 8) else None
+                right = Data.cols[row_ind - 1] + step if row_ind - 1 in range(0, 8) else None
 
                 if left is not None and (board.tiles[left][1] is None or board.tiles[left][1].color != piece.color):
                     yield left
                 if right is not None and (board.tiles[right][1] is None or board.tiles[right][1].color != piece.color):
                     yield right
             else:
-                up = step + Data.cols[col_ind + 1] if col_ind + 1 in range(0,8) else None
-                down = step + Data.cols[col_ind - 1] if col_ind -1 in range(0,8) else None
+                up = step + Data.rows[col_ind + 1] if col_ind + 1 in range(0, 8) else None
+                down = step + Data.rows[col_ind - 1] if col_ind - 1 in range(0, 8) else None
                 if up is not None and (board.tiles[up][1] is None or board.tiles[up][1].color != piece.color):
                     yield up
                 if down is not None and (board.tiles[down][1] is None or board.tiles[down][1].color != piece.color):
                     yield down
 
 
-    return []
-
-def rook_fn(piece: Piece, board:Board):
+def rook_fn(piece: Piece, board: Board):
     row_ind, col_ind = get_index(piece.position)
-    vertical = [Data.cols[:col_ind][::-1], Data.cols[col_ind + 1:]]
-    horizontal = [Data.rows[:row_ind][::-1], Data.rows[row_ind + 1:]]
+    vertical = [Data.rows[:col_ind][::-1], Data.rows[col_ind + 1:]]
+    horizontal = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
     for directions in vertical + horizontal:
         for direction in directions:
             pos = piece.position[0] + direction if directions in vertical else direction + piece.position[1]
@@ -109,8 +130,10 @@ def rook_fn(piece: Piece, board:Board):
                 yield pos
 
 
-opts = {'king':king_fn, 'queen': queen_fn, 'rook':rook_fn, 'bishop':bishop_fn, 'pawn':pawn_fn, 'knight': knight_fn}
-def get_moves(board:Board, col: str) -> dict[Piece:list[str]]:
+opts = {'king': king_fn, 'queen': queen_fn, 'rook': rook_fn, 'bishop': bishop_fn, 'pawn': pawn_fn, 'knight': knight_fn}
+
+
+def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
     moves = {}
     col_pieces, enm_pieces = [], []
     col_king, enm_king = None, None
@@ -126,9 +149,10 @@ def get_moves(board:Board, col: str) -> dict[Piece:list[str]]:
                     enm_king = tile[1]
 
     for piece in col_pieces:
-        moves[piece.position] = []
+        moves[piece.position] = [[], []]  # Stores position and special flags respectively
         for candidate in opts[piece.type](piece, board):
-            moves[piece.position].append(candidate)
+            moves[piece.position][0].append(candidate[0:2])
+            moves[piece.position][1].append(candidate[2:])
     return moves
 
-#print(get_moves(Board(), 'black'))
+# print(get_moves(Board(), 'black'))

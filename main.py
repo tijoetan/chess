@@ -4,16 +4,17 @@ from Player import Player
 import pygame
 import sys
 
+
 class Game:
     def __init__(self):
         pygame.init()
-        self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess")
         self.sprites = pygame.sprite.Group
         self.board = Board()
         self.white = Player(self.board, 'white')
         self.black = Player(self.board, 'black')
-        #print(self.board.tiles)
+        # print(self.board.tiles)
         self.clock = pygame.time.Clock()
         self.show_piece = False
 
@@ -21,6 +22,7 @@ class Game:
 
     def switch(self, player):
         return self.white if player == self.black else self.black
+
     def run(self):
         self.player.update_moves()
         while True:
@@ -37,7 +39,6 @@ class Game:
                             self.player.update_moves()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     self.show_piece = True if self.player.pickup() is not None else False
-
 
             self.screen.fill('blue')
             self.board.render()
