@@ -23,6 +23,8 @@ class Game:
     def switch(self, player):
         return self.white if player == self.black else self.black
 
+    def render_board(self):
+
     def run(self):
         self.player.update_moves()
         while True:

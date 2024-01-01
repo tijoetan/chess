@@ -13,8 +13,6 @@ def get_vertical(row_ind, col_ind):
     return
 
 
-
-
 def king_fn(piece: Piece, tiles: dict):
     row_ind, col_ind = get_index(piece.position)
     new_cols = [Data.rows[col_ind + i] for i in range(-1, 2) if col_ind + i in range(0, 8)]
@@ -132,6 +130,7 @@ def rook_fn(piece: Piece, tiles: dict):
 
 opts = {'king': king_fn, 'queen': queen_fn, 'rook': rook_fn, 'bishop': bishop_fn, 'pawn': pawn_fn, 'knight': knight_fn}
 
+
 def check_check(king: Piece, board: dict) -> bool:  # Determines if given king is in check
     for fn in zip(opts.values(), opts.keys()):
         if fn[1] == 'king':
@@ -144,8 +143,7 @@ def check_check(king: Piece, board: dict) -> bool:  # Determines if given king i
     return False
 
 
-
-def get_moves(board, col): #-> Board[Piece:list[str]]:
+def get_moves(board, col):  # -> Board[Piece:list[str]]:
     copied = copy_tiles(board.tiles)
     moves = {}
     col_pieces, enm_pieces = [], []
@@ -164,7 +162,7 @@ def get_moves(board, col): #-> Board[Piece:list[str]]:
     for piece in col_pieces.copy():
         moves[piece.position] = [[], []]  # Stores position and special flags respectively
         for candidate in opts[piece.type](piece, board.tiles):
-            if check_check(col_king, apply_move(dict(copied), candidate, piece, 'shift')):
+            if check_check(col_king, apply_move(copy_tiles(board.tiles), candidate, piece, 'shift')):
                 continue
             else:
                 moves[piece.position][0].append(candidate[0:2])

@@ -52,24 +52,26 @@ class Board:
 
 
 class Tile:
-    def __init__(self, position: (int, int), col: pygame.Color) -> None:
-
-        #for copy
+    def __init__(self, position: (int, int), col: pygame.Color, surf_source) -> None:
+        # for copy
         self.position = position
         self.col = col
 
+        self.surf_source = surf_source
         self.image = pygame.Surface((SIZE, SIZE))
         self.image.fill(self.col)
 
-        self.rect =  pygame.Rect(0,0, Data.SIZE, Data.SIZE)    #self.image.get_rect()
+        self.rect = pygame.Rect(0, 0, Data.SIZE, Data.SIZE)  # self.image.get_rect()
         # print(position)
         self.rect.move_ip(position[0], position[1])
 
     def highlight(self, color):
         new_col = self.col.lerp(color, 0.3)
+        self.surf_source = f"{self.col}_highlight"
         self.image.fill(new_col)
 
     def remove_highlight(self):
+        self.surf_source = self.col
         self.image.fill(self.col)
 
 
@@ -81,14 +83,12 @@ class Piece:
         self.type = type
         self.image = pygame.image.load(find_piece_image(type, color))
         self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
-        self.rect = pygame.Rect(0,0,SIZE,SIZE)
+        self.rect = pygame.Rect(0, 0, SIZE, SIZE)
         self.rect.centerx, self.rect.centery = pos_to_coords(position)
 
         # Enpassant + Castle params
         self.moves = moves
         self.stat = stat
-
-
 
 
 def copy_tiles(tiles: dict[str:[Tile, Piece]]):
