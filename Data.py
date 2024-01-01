@@ -42,6 +42,7 @@ def load_and_scale(piece, color):
 
 dark_square = pygame.Surface((SIZE, SIZE))
 dark_square.fill(DARK)
+
 light_square = pygame.Surface((SIZE, SIZE))
 light_square.fill(LIGHT)
 
@@ -58,11 +59,20 @@ light_accepted = pygame.Surface((SIZE, SIZE))
 light_accepted.fill(LIGHT)
 pygame.draw.circle(light_accepted, 'lightgreen', (SIZE // 2, SIZE // 2), SIZE // 6)
 
+dark_capture = pygame.Surface((SIZE, SIZE))
+dark_capture.fill('green')
+pygame.draw.circle(dark_capture, DARK, (SIZE//2, SIZE//2), SIZE//1.7)
+
+light_capture = pygame.Surface((SIZE, SIZE))
+light_capture.fill('lightgreen')
+pygame.draw.circle(light_capture, LIGHT, (SIZE//2, SIZE//2), SIZE//1.7)
+
 piece_surface_library = {f"{c}-{p}": load_and_scale(p, c) for p in piece_names for c in colors}
 print(piece_surface_library)
 square_surface_library = {'light': light_square, 'light_hover': light_hover,
                           'light_accepted': light_accepted, 'dark': dark_square,
-                          'dark_hover': dark_hover, 'dark_accepted': dark_accepted}
+                          'dark_hover': dark_hover, 'dark_accepted': dark_accepted,
+                          'dark_capture':dark_capture, 'light_capture':light_capture}
 
 # pygame.init()
 # window = pygame.display.set_mode((HEIGHT, WIDTH))

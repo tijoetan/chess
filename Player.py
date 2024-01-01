@@ -1,8 +1,8 @@
 import pygame
+
 from Board import Board, Piece, mouse_to_square
 from Logic import get_moves
 from move import apply_move
-from copy import copy
 
 
 class Player:
@@ -55,17 +55,20 @@ class Player:
     def move_lifted(self) -> None:
         if self.held_piece is not None:
             self.held_piece.rect.center = mouse_to_square(True)
-            #self.surface.blit(self.held_piece.image, self.held_piece.rect)
+            # self.surface.blit(self.held_piece.image, self.held_piece.rect)
 
     def color_tiles(self):
         for tile in zip(self.board.tiles.keys(), self.board.tiles.values()):
             tile[1][0].remove_highlight()
             if tile[0] in self.valid_moves[0]:
-                tile[1][0].highlight('accepted')
+                index = self.valid_moves[0].index(tile[0])
+                if 'x' in self.valid_moves[1][index]:
+                    tile[1][0].highlight('capture')
+                else:
+                    tile[1][0].highlight('accepted')
         if self.held_piece is None:
             square = mouse_to_square()
             self.board.tiles[square][0].highlight('hover')
-
 
     def update_moves(self):
         self.move_dict = get_moves(self.board, self.color)

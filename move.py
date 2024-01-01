@@ -1,6 +1,5 @@
 import Data
 from Board import Board, Piece
-from copy import copy, deepcopy
 
 
 def place_piece(tiles: dict, position, piece, return_piece = False):
@@ -19,14 +18,12 @@ def shift_piece(tiles, start_pos, end_pos, return_piece = False):
 
 def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board:  # Either piece is given to be placed
     # or start square is given to move piece
-    new_tiles = tiles.copy()
-    new_piece = copy(piece)
- 
+
     position = move[0:2]
     flags = move[2:]
 
     if 'c' in flags:  # Castling
-        king_move = place_piece(new_tiles, position, new_piece)
+        king_move = place_piece(tiles, position, piece)
         col_ind = Data.cols.index(position[0])
         castle_type = 'R' if col_ind > 5 else 'L'
         rook_start = ('H' if castle_type == 'R' else 'A') + position[1]
@@ -34,9 +31,9 @@ def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board: 
         return shift_piece(king_move, rook_start, rook_end)
 
     if 'e' in flags:
-        passant = place_piece(new_tiles, position, new_piece)
+        passant = place_piece(tiles, position, piece)
         to_capture = position[0] + (position[1] - 1 if piece.color == 'white' else position[1] + 1)
-        new_tiles[to_capture][1] = None
-        return new_tiles
+        tiles[to_capture][1] = None
+        return tiles
     else:
-        return place_piece(new_tiles, position, new_piece) # if piece is not None else shift_piece(to_move, move)
+        return place_piece(tiles, position, piece) # if piece is not None else shift_piece(to_move, move)
