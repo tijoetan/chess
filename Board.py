@@ -1,3 +1,4 @@
+import Data
 from Data import *
 import pygame
 from files import find_piece_image
@@ -43,14 +44,24 @@ class Board:
             if tile[1] is not None:
                 self.surface.blit(tile[1].image, tile[1].rect)
 
+    def copy_tiles(self):
+        copy = {}
+        for key in self.tiles:
+            piece = self.tiles[key][1]
+            copy[key] = [piece.type, piece.position, piece.color] if piece is not None else None
+
 
 class Tile:
     def __init__(self, position: (int, int), col: pygame.Color) -> None:
-        self.image = pygame.Surface((SIZE, SIZE))
+
+        #for copy
+        self.position = position
         self.col = col
+
+        self.image = pygame.Surface((SIZE, SIZE))
         self.image.fill(self.col)
 
-        self.rect = self.image.get_rect()
+        self.rect =  pygame.Rect(0,0, Data.SIZE, Data.SIZE)    #self.image.get_rect()
         # print(position)
         self.rect.move_ip(position[0], position[1])
 
@@ -70,9 +81,21 @@ class Piece:
         self.type = type
         self.image = pygame.image.load(find_piece_image(type, color))
         self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
-        self.rect = self.image.get_rect()
+        self.rect = pygame.Rect(0,0,SIZE,SIZE)
         self.rect.centerx, self.rect.centery = pos_to_coords(position)
 
         # Enpassant + Castle params
         self.moves = moves
         self.stat = stat
+
+
+
+
+def copy_tiles(tiles: dict[str:[Tile, Piece]]):
+    copy = {}
+    for tile_key in tiles:
+        tile = tiles[tile_key][0]
+        piece = tiles[tile_key][1]
+        copy[tile_key] = [Tile(tile.position, tile.col), (Piece(piece.type, piece.position, piece.color)
+                                                          if piece is not None else None)]
+    return copy

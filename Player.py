@@ -2,6 +2,7 @@ import pygame
 from Board import Board, Piece, mouse_to_square
 from Logic import get_moves
 from move import apply_move
+from copy import copy
 
 
 class Player:
@@ -14,7 +15,7 @@ class Player:
         self.surface = pygame.display.get_surface()
 
         # For moving pieces
-        self.valid_moves = [[],[]]
+        self.valid_moves = [[], []]
         self.go_back = ''
         self.move_dict = {}
         self.highlight_col = 'purple' if color == 'white' else 'green'
@@ -34,7 +35,7 @@ class Player:
         if pos in self.valid_moves[0]:
             flags = self.valid_moves[1][self.valid_moves[0].index(pos)]
             updated_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
-            self.board.tiles = apply_move(self.board, pos + flags if flags is not None else pos + 'n' ,updated_piece)
+            self.board.tiles = apply_move(self.board.tiles, pos + flags if flags is not None else pos, updated_piece)
             did_move = True
         else:
             self.board.tiles[self.go_back][1] = Piece(self.held_piece.type, self.go_back,
@@ -68,5 +69,5 @@ class Player:
 
     def update_moves(self):
         self.move_dict = get_moves(self.board, self.color)
-        self.valid_moves = [[],[]]
+        self.valid_moves = [[], []]
         print(self.move_dict)
