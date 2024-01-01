@@ -52,13 +52,13 @@ light_hover.fill(DARK_HOVER)
 
 dark_accepted = pygame.Surface((SIZE, SIZE))
 dark_accepted.fill(DARK)
-pygame.draw.circle(dark_accepted, 'green', (SIZE // 2, SIZE // 2), SIZE // 8)
+pygame.draw.circle(dark_accepted, 'green', (SIZE // 2, SIZE // 2), SIZE // 6)
 
 light_accepted = pygame.Surface((SIZE, SIZE))
 light_accepted.fill(LIGHT)
-pygame.draw.circle(light_accepted, 'lightgreen', (SIZE // 2, SIZE // 2), SIZE // 8)
+pygame.draw.circle(light_accepted, 'lightgreen', (SIZE // 2, SIZE // 2), SIZE // 6)
 
-piece_surface_library = {f"{p}-{c}": load_and_scale(p, c) for p in piece_names for c in colors}
+piece_surface_library = {f"{c}-{p}": load_and_scale(p, c) for p in piece_names for c in colors}
 print(piece_surface_library)
 square_surface_library = {'light': light_square, 'light_hover': light_hover,
                           'light_accepted': light_accepted, 'dark': dark_square,

@@ -144,7 +144,6 @@ def check_check(king: Piece, board: dict) -> bool:  # Determines if given king i
 
 
 def get_moves(board, col):  # -> Board[Piece:list[str]]:
-    copied = copy_tiles(board.tiles)
     moves = {}
     col_pieces, enm_pieces = [], []
     col_king, enm_king = None, None
@@ -159,10 +158,15 @@ def get_moves(board, col):  # -> Board[Piece:list[str]]:
                 if tile[1].type == 'king':
                     enm_king = tile[1]
 
-    for piece in col_pieces.copy():
+    for piece in col_pieces:
         moves[piece.position] = [[], []]  # Stores position and special flags respectively
         for candidate in opts[piece.type](piece, board.tiles):
-            if check_check(col_king, apply_move(copy_tiles(board.tiles), candidate, piece, 'shift')):
+            test_board = copy_tiles(board.tiles)
+            test_piece = copy(piece)
+            test_board[piece.position][1] = None
+            test_piece.position = candidate[0:2]
+            if check_check(test_piece if piece.type == 'king' else col_king,
+                           apply_move(test_board, candidate, test_piece)):
                 continue
             else:
                 moves[piece.position][0].append(candidate[0:2])

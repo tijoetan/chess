@@ -3,6 +3,8 @@ from Data import *
 import pygame
 from files import find_piece_image
 
+def col_to_string(col):
+    return 'dark' if col == DARK else 'light'
 
 def pos_to_coords(pos: str) -> (int, int):
     return lookup[pos[0]] * SIZE - SIZE / 2, lookup[pos[1]] * SIZE - SIZE / 2
@@ -38,11 +40,11 @@ class Board:
             self.tiles[item[1]][1] = piece
             self.lopieces.append(piece)
 
-    def render(self):
-        for tile in self.tiles.values():
-            self.surface.blit(tile[0].image, tile[0].rect)
-            if tile[1] is not None:
-                self.surface.blit(tile[1].image, tile[1].rect)
+    # def render(self):
+    #     for tile in self.tiles.values():
+    #         self.surface.blit(tile[0].image, tile[0].rect)
+    #         if tile[1] is not None:
+    #             self.surface.blit(tile[1].image, tile[1].rect)
 
     def copy_tiles(self):
         copy = {}
@@ -52,27 +54,27 @@ class Board:
 
 
 class Tile:
-    def __init__(self, position: (int, int), col: pygame.Color, surf_source) -> None:
+    def __init__(self, position: (int, int), col: pygame.Color) -> None:
         # for copy
         self.position = position
         self.col = col
 
-        self.surf_source = surf_source
-        self.image = pygame.Surface((SIZE, SIZE))
-        self.image.fill(self.col)
+        self.surf_source = col_to_string(self.col)
+        #self.image = pygame.Surface((SIZE, SIZE))
+        #self.image.fill(self.col)
 
         self.rect = pygame.Rect(0, 0, Data.SIZE, Data.SIZE)  # self.image.get_rect()
         # print(position)
         self.rect.move_ip(position[0], position[1])
 
-    def highlight(self, color):
-        new_col = self.col.lerp(color, 0.3)
-        self.surf_source = f"{self.col}_highlight"
-        self.image.fill(new_col)
+    def highlight(self, method):
+        #new_col = self.col.lerp(color, 0.3)
+        self.surf_source = f"{col_to_string(self.col)}_{method}"
+        #self.image.fill(new_col)
 
     def remove_highlight(self):
-        self.surf_source = self.col
-        self.image.fill(self.col)
+        self.surf_source = col_to_string(self.col)
+        #self.image.fill(self.col)
 
 
 class Piece:
@@ -81,8 +83,8 @@ class Piece:
         self.position = position
         self.color = color
         self.type = type
-        self.image = pygame.image.load(find_piece_image(type, color))
-        self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
+        #self.image = pygame.image.load(find_piece_image(type, color))
+        #self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
         self.rect = pygame.Rect(0, 0, SIZE, SIZE)
         self.rect.centerx, self.rect.centery = pos_to_coords(position)
 

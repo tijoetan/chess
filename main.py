@@ -24,6 +24,15 @@ class Game:
         return self.white if player == self.black else self.black
 
     def render_board(self):
+        for tile in self.board.tiles.values():
+            square = tile[0]
+            piece = tile[1]
+            self.screen.blit(square_surface_library[square.surf_source], square.rect)
+            if piece is not None:
+                self.screen.blit(piece_surface_library[f"{piece.color}-{piece.type}"], piece.rect)
+        moving_piece = self.player.held_piece
+        if moving_piece is not None:
+            self.screen.blit(piece_surface_library[f"{moving_piece.color}-{moving_piece.type}"], moving_piece.rect)
 
     def run(self):
         self.player.update_moves()
@@ -43,10 +52,10 @@ class Game:
                     self.show_piece = True if self.player.pickup() is not None else False
 
             self.screen.fill('blue')
-            self.board.render()
             self.player.color_tiles()
+            self.render_board()
             if self.show_piece:
-                self.player.display_motion()
+                self.player.move_lifted()
             self.clock.tick(60)
             pygame.display.update()
 
