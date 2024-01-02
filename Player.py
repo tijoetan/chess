@@ -37,12 +37,12 @@ class Player:
                 # x = input('what would you like to promote to')
                 # print('fe')
                 # updated_piece = Piece(x, pos, self.held_piece.color, self.held_piece.moves + 1
-            self.held_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
+            self.held_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves)
             did_move = True
             self.board.tiles = apply_move(self.board.tiles, pos + flags if flags is not None else pos,
                                           self.held_piece)
             if 'p' in flags and self.held_piece.type == 'pawn':
-                raise TypeError('must promote')
+                raise KeyError('must promote')
         else:
             self.board.tiles[self.go_back][1] = Piece(self.held_piece.type, self.go_back,
                                                       self.held_piece.color, self.held_piece.moves)
@@ -76,7 +76,10 @@ class Player:
             square = mouse_to_square()
             self.board.tiles[square][0].highlight('hover')
 
-    def update_moves(self):
+    def update_moves(self) -> dict or None:
         self.move_dict = get_moves(self.board, self.color)
+        if self.move_dict in [1,2]:
+            return self.move_dict
         self.valid_moves = [[], []]
         print(self.move_dict)
+        return

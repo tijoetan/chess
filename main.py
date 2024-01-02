@@ -1,7 +1,7 @@
 from Data import *
 from Board import Board, Piece
 from Player import Player
-from promotion import ChoiceBoard
+from Menus import ChoiceBoard, GameOver
 import pygame
 import sys
 
@@ -14,6 +14,9 @@ class Game:
         self.board = Board()
         self.white = Player(self.board, 'white')
         self.black = Player(self.board, 'black')
+
+        self.over = False
+        self.over_screen = None
         # print(self.board.tiles)
         self.clock = pygame.time.Clock()
         self.has_piece = False
@@ -24,8 +27,22 @@ class Game:
 
         self.player.update_moves()
 
-    def switch(self, player):
-        return self.white if player == self.black else self.black
+
+    def end(self, type):
+        if type == 1:
+            self.over_screen = GameOver('checkmate')
+            self.over = True
+        elif type == 2:
+            self.over_screen = GameOver('stalemate')
+            self.over = True
+
+
+    def switch_update(self):
+        self.player = self.white if self.player == self.black else self.black
+        moves = self.player.update_moves()
+        if moves is not None:
+            self.end(moves)
+
 
     def render_board(self):
         for tile in self.board.tiles.values():
@@ -39,6 +56,9 @@ class Game:
             self.screen.blit(piece_surface_library[f"{moving_piece.color}-{moving_piece.type}"], moving_piece.rect)
         if self.show_choice:
             self.choice_boards[self.player.color].show()
+        if self.over:
+            text = self.over_screen.text
+            self.screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
 
     def run(self):
 
@@ -52,14 +72,13 @@ class Game:
                         if self.has_piece:
                             try:
                                 x = self.player.put_down()
-                            except TypeError:
+                            except KeyError:
                                 self.show_choice = True
                                 break
 
                             self.has_piece = False
                             if x:
-                                self.player = self.switch(self.player)
-                                self.player.update_moves()
+                                self.switch_update()
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if self.show_choice:
                         piece = self.choice_boards[self.player.color].get_piece()
@@ -70,13 +89,12 @@ class Game:
                                                            current_piece.color, current_piece.moves + 1)
                             self.has_piece = False
                             self.player.held_piece = None
-                            self.player = self.switch(self.player)
-                            self.player.update_moves()
+                            self.switch_update()
                             self.show_choice = False
                     else:
                         self.has_piece = True if self.player.pickup() is not None else False
 
-            self.screen.fill('blue')
+            #self.screen.fill('')
             self.player.color_tiles()
             self.render_board()
             if self.has_piece and not self.show_choice:
@@ -87,4 +105,7 @@ class Game:
 
 if __name__ == '__main__':
     game = Game()
-    game.run()
+    if not game.over:
+        game.run()
+    else:
+        game.render_board()

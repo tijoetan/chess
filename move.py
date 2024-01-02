@@ -1,4 +1,6 @@
 import Data
+
+import Data
 from Board import Board, Piece
 
 
@@ -17,8 +19,7 @@ def shift_piece(tiles, start_pos, end_pos, return_piece = False):
 
 
 def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board:  # Either piece is given to be placed
-    # or start square is given to move piece
-
+    # or start square is given to move piecce
     position = move[0:2]
     flags = move[2:]
 
@@ -31,8 +32,10 @@ def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board: 
         return shift_piece(king_move, rook_start, rook_end)
 
     if 'e' in flags:
-        passant = place_piece(tiles, position, piece)
-        to_capture = position[0] + (position[1] - 1 if piece.color == 'white' else position[1] + 1)
+        place_piece(tiles, position, piece)
+        new_row_index = Data.rows.index(position[1]) + (1 if piece.color == 'white' else -1)
+        capture_row = Data.rows[new_row_index]
+        to_capture = position[0] + capture_row
         tiles[to_capture][1] = None
         return tiles
     else:

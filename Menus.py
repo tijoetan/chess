@@ -8,7 +8,7 @@ class ChoiceBoard():
         self.rect = Data.choice_bkg.get_rect()
         self.rect.center = Data.WIDTH // 2, Data.HEIGHT // 2
         self.order = ['queen', 'rook', 'knight', 'bishop']
-        self.font = pygame.font.Font(None)
+        self.font = pygame.font.Font(size=30)
         self.text = self.font.render('Choose promotion piece', True, 'black')
         self.screen = pygame.display.get_surface()
         # self.font = pygame.font.Font()
@@ -34,3 +34,11 @@ class ChoiceBoard():
         pos = pygame.mouse.get_pos()
         piece = self.get_selected(pos)
         return piece if piece else False
+
+
+class GameOver():
+    def __init__(self, type):
+        self.font = pygame.font.Font(size=50)
+        self.text = self.font.render(type, True, 'red')
+
+

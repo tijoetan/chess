@@ -54,7 +54,12 @@ def queen_fn(piece: Piece, tiles: dict):
 def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
     row_ind, col_ind = get_index(piece.position)
     direction = -1 if piece.color == 'white' else 1
-    max = Data.rows[::(-1*direction)][0]
+    order = Data.rows[::(-1*direction)]
+    max = order[0]
+    passant_row = order[3]
+    capture_row = order[2]
+    print(piece.position)
+    print(capture_row)
     advance_one = False
     new_pos = [Data.cols[row_ind + i] + Data.rows[col_ind + direction]
                for i in range(-1, 2) if row_ind + i in range(0, 8)]
@@ -71,6 +76,10 @@ def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
               pos[0] != piece.position[0]):
 
             yield pos + 'x' + prom_flag
+        elif pos[1] == capture_row:
+            to_capture = tiles[pos[0] + passant_row][1]
+            if to_capture is not None and to_capture.type == 'pawn' and not to_capture.stat and to_capture.moves == 1:
+                yield pos + 'e'
     if piece.moves == 0 and advance_one:
         double_spot = tiles[piece.position[0] + Data.rows[col_ind + 2 * direction]][1]
         if double_spot is None:
@@ -177,6 +186,7 @@ def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
     for tile in board.tiles.values():
         if tile[1] is not None:
             if tile[1].color == col:
+                tile[1].stat = True
                 col_pieces.append(tile[1])
                 if tile[1].type == 'king':
                     col_king = tile[1]
@@ -202,9 +212,9 @@ def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
             no_moves = False
     if no_moves:
         if checked:
-            print('checkmate')
+            return 1
         else:
-            print('stalemate')
+            return 2
     return moves
 
 # print(get_moves(Board(), 'black'))
