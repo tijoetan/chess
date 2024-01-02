@@ -1,10 +1,10 @@
 import Data
 from Data import *
-import pygame
-from files import find_piece_image
+
 
 def col_to_string(col):
     return 'dark' if col == DARK else 'light'
+
 
 def pos_to_coords(pos: str) -> (int, int):
     return lookup[pos[0]] * SIZE - SIZE / 2, lookup[pos[1]] * SIZE - SIZE / 2
@@ -60,21 +60,21 @@ class Tile:
         self.col = col
 
         self.surf_source = col_to_string(self.col)
-        #self.image = pygame.Surface((SIZE, SIZE))
-        #self.image.fill(self.col)
+        # self.image = pygame.Surface((SIZE, SIZE))
+        # self.image.fill(self.col)
 
         self.rect = pygame.Rect(0, 0, Data.SIZE, Data.SIZE)  # self.image.get_rect()
         # print(position)
         self.rect.move_ip(position[0], position[1])
 
     def highlight(self, method):
-        #new_col = self.col.lerp(color, 0.3)
+        # new_col = self.col.lerp(color, 0.3)
         self.surf_source = f"{col_to_string(self.col)}_{method}"
-        #self.image.fill(new_col)
+        # self.image.fill(new_col)
 
     def remove_highlight(self):
         self.surf_source = col_to_string(self.col)
-        #self.image.fill(self.col)
+        # self.image.fill(self.col)
 
 
 class Piece:
@@ -87,8 +87,8 @@ class Piece:
         self.position = position
         self.color = color
         self.type = type
-        #self.image = pygame.image.load(find_piece_image(type, color))
-        #self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
+        # self.image = pygame.image.load(find_piece_image(type, color))
+        # self.image = pygame.transform.smoothscale(self.image.convert_alpha(), (SIZE, SIZE))
         self.rect = pygame.Rect(0, 0, SIZE, SIZE)
         self.rect.centerx, self.rect.centery = pos_to_coords(position)
 

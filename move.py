@@ -1,15 +1,13 @@
 import Data
-
-import Data
 from Board import Board, Piece
 
 
-def place_piece(tiles: dict, position, piece, return_piece = False):
+def place_piece(tiles: dict, position, piece, return_piece=False):
     tiles[piece.position][1] = Piece(piece.type, position, piece.color, piece.moves + 1)
     return tiles
 
 
-def shift_piece(tiles, start_pos, end_pos, return_piece = False):
+def shift_piece(tiles, start_pos, end_pos, return_piece=False):
     to_shift = tiles[start_pos][1]
     if to_shift is not None:
         tiles[end_pos][1] = Piece(to_shift.type, end_pos, to_shift.color, to_shift.moves + 1)
@@ -18,7 +16,7 @@ def shift_piece(tiles, start_pos, end_pos, return_piece = False):
     return tiles
 
 
-def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board:  # Either piece is given to be placed
+def apply_move(tiles: dict, move, piece: Piece, return_piece=False) -> Board:  # Either piece is given to be placed
     # or start square is given to move piecce
     position = move[0:2]
     flags = move[2:]
@@ -39,4 +37,4 @@ def apply_move(tiles: dict, move, piece: Piece, return_piece = False) -> Board: 
         tiles[to_capture][1] = None
         return tiles
     else:
-        return place_piece(tiles, position, piece) # if piece is not None else shift_piece(to_move, move)
+        return place_piece(tiles, position, piece)  # if piece is not None else shift_piece(to_move, move)

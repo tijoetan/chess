@@ -1,9 +1,9 @@
-from Data import *
-from Board import Board, Piece
-from Player import Player
-from Menus import ChoiceBoard, GameOver
-import pygame
 import sys
+
+from Board import Board, Piece
+from Data import *
+from Menus import ChoiceBoard, GameOver
+from Player import Player
 
 
 class Game:
@@ -27,7 +27,6 @@ class Game:
 
         self.player.update_moves()
 
-
     def end(self, type):
         if type == 1:
             self.over_screen = GameOver('checkmate')
@@ -36,13 +35,11 @@ class Game:
             self.over_screen = GameOver('stalemate')
             self.over = True
 
-
     def switch_update(self):
         self.player = self.white if self.player == self.black else self.black
         moves = self.player.update_moves()
         if moves is not None:
             self.end(moves)
-
 
     def render_board(self):
         for tile in self.board.tiles.values():
@@ -58,7 +55,7 @@ class Game:
             self.choice_boards[self.player.color].show()
         if self.over:
             text = self.over_screen.text
-            self.screen.blit(text, text.get_rect(center=(WIDTH//2, HEIGHT//2)))
+            self.screen.blit(text, text.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
 
     def run(self):
 
@@ -86,7 +83,8 @@ class Game:
                             current_piece = self.player.held_piece
                             current_piece: Piece or None
                             self.board.tiles[current_piece.position][1] = Piece(piece, current_piece.position,
-                                                           current_piece.color, current_piece.moves + 1)
+                                                                                current_piece.color,
+                                                                                current_piece.moves + 1)
                             self.has_piece = False
                             self.player.held_piece = None
                             self.switch_update()
@@ -94,7 +92,7 @@ class Game:
                     else:
                         self.has_piece = True if self.player.pickup() is not None else False
 
-            #self.screen.fill('')
+            # self.screen.fill('')
             self.player.color_tiles()
             self.render_board()
             if self.has_piece and not self.show_choice:

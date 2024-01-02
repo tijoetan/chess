@@ -34,9 +34,9 @@ class Player:
         pos = mouse_to_square()
         if pos in self.valid_moves[0]:
             flags = self.valid_moves[1][self.valid_moves[0].index(pos)]
-                # x = input('what would you like to promote to')
-                # print('fe')
-                # updated_piece = Piece(x, pos, self.held_piece.color, self.held_piece.moves + 1
+            # x = input('what would you like to promote to')
+            # print('fe')
+            # updated_piece = Piece(x, pos, self.held_piece.color, self.held_piece.moves + 1
             self.held_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves)
             did_move = True
             self.board.tiles = apply_move(self.board.tiles, pos + flags if flags is not None else pos,
@@ -78,7 +78,7 @@ class Player:
 
     def update_moves(self) -> dict or None:
         self.move_dict = get_moves(self.board, self.color)
-        if self.move_dict in [1,2]:
+        if self.move_dict in [1, 2]:
             return self.move_dict
         self.valid_moves = [[], []]
         print(self.move_dict)

@@ -1,5 +1,6 @@
-import Data
 import pygame
+
+import Data
 
 
 class ChoiceBoard():
@@ -40,5 +41,3 @@ class GameOver():
     def __init__(self, type):
         self.font = pygame.font.Font(size=50)
         self.text = self.font.render(type, True, 'red')
-
-

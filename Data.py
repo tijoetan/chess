@@ -1,4 +1,5 @@
 import pygame
+
 from files import find_piece_image
 
 WIDTH = 8 * 60
@@ -61,13 +62,13 @@ pygame.draw.circle(light_accepted, 'lightgreen', (SIZE // 2, SIZE // 2), SIZE //
 
 dark_capture = pygame.Surface((SIZE, SIZE))
 dark_capture.fill('green')
-pygame.draw.circle(dark_capture, DARK, (SIZE//2, SIZE//2), SIZE//1.7)
+pygame.draw.circle(dark_capture, DARK, (SIZE // 2, SIZE // 2), SIZE // 1.7)
 
 light_capture = pygame.Surface((SIZE, SIZE))
 light_capture.fill('lightgreen')
-pygame.draw.circle(light_capture, LIGHT, (SIZE//2, SIZE//2), SIZE//1.7)
+pygame.draw.circle(light_capture, LIGHT, (SIZE // 2, SIZE // 2), SIZE // 1.7)
 
-choice_bkg = pygame.Surface((SIZE*4, SIZE))
+choice_bkg = pygame.Surface((SIZE * 4, SIZE))
 choice_bkg.fill('gray')
 
 piece_surface_library = {f"{c}-{p}": load_and_scale(p, c) for p in piece_names for c in colors}
@@ -75,10 +76,7 @@ print(piece_surface_library)
 square_surface_library = {'light': light_square, 'light_hover': light_hover,
                           'light_accepted': light_accepted, 'dark': dark_square,
                           'dark_hover': dark_hover, 'dark_accepted': dark_accepted,
-                          'dark_capture':dark_capture, 'light_capture':light_capture}
-
-
-
+                          'dark_capture': dark_capture, 'light_capture': light_capture}
 
 # pygame.init()
 # window = pygame.display.set_mode((HEIGHT, WIDTH))

@@ -1,16 +1,12 @@
+from copy import copy
+
 import Data
 from Board import Board, Piece, copy_tiles
 from move import apply_move
-from copy import copy, deepcopy
-import pygame
 
 
 def get_index(position: str) -> (int, int):
     return Data.cols.index(position[0]), Data.rows.index(position[1])
-
-
-def get_vertical(row_ind, col_ind):
-    return
 
 
 def king_fn(piece: Piece, tiles: dict) -> list[str]:
@@ -54,7 +50,7 @@ def queen_fn(piece: Piece, tiles: dict):
 def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
     row_ind, col_ind = get_index(piece.position)
     direction = -1 if piece.color == 'white' else 1
-    order = Data.rows[::(-1*direction)]
+    order = Data.rows[::(-1 * direction)]
     max = order[0]
     passant_row = order[3]
     capture_row = order[2]
