@@ -78,7 +78,11 @@ class Tile:
 
 
 class Piece:
-    def __init__(self, type: str, position: str, color: str, moves=0, stat=False) -> None:
+    def __init__(self, type: str, position: str, color: str, moves: object = 0, stat: object = False) -> None:
+        """
+
+        :rtype: object
+        """
         self.captured = False
         self.position = position
         self.color = color

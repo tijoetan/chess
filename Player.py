@@ -34,15 +34,15 @@ class Player:
         pos = mouse_to_square()
         if pos in self.valid_moves[0]:
             flags = self.valid_moves[1][self.valid_moves[0].index(pos)]
-            if 'p' in flags:
-                raise TypeError('must promote')
                 # x = input('what would you like to promote to')
                 # print('fe')
-                # updated_piece = Piece(x, pos, self.held_piece.color, self.held_piece.moves + 1)
-            else:
-                updated_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
-            self.board.tiles = apply_move(self.board.tiles, pos + flags if flags is not None else pos, updated_piece)
+                # updated_piece = Piece(x, pos, self.held_piece.color, self.held_piece.moves + 1
+            self.held_piece = Piece(self.held_piece.type, pos, self.held_piece.color, self.held_piece.moves + 1)
             did_move = True
+            self.board.tiles = apply_move(self.board.tiles, pos + flags if flags is not None else pos,
+                                          self.held_piece)
+            if 'p' in flags and self.held_piece.type == 'pawn':
+                raise TypeError('must promote')
         else:
             self.board.tiles[self.go_back][1] = Piece(self.held_piece.type, self.go_back,
                                                       self.held_piece.color, self.held_piece.moves)
