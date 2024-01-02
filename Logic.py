@@ -30,13 +30,13 @@ def king_fn(piece: Piece, tiles: dict) -> list[str]:
                 yield row + col
     if piece.moves == 0:
         horizontals = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
-        #print(horizontals)
+        # print(horizontals)
         row = piece.position[1]
         for lr in horizontals:
             for col in lr:
                 tile = tiles[col + row][1]
                 if tile is None:
-                    #print('empty square')
+                    # print('empty square')
                     continue
                 elif tile.type == 'rook' and tile.moves == 0:
                     yield lr[1] + row + 'c'
@@ -54,20 +54,23 @@ def queen_fn(piece: Piece, tiles: dict):
 def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
     row_ind, col_ind = get_index(piece.position)
     direction = -1 if piece.color == 'white' else 1
+    max = Data.rows[::(-1*direction)][0]
     advance_one = False
     new_pos = [Data.cols[row_ind + i] + Data.rows[col_ind + direction]
                for i in range(-1, 2) if row_ind + i in range(0, 8)]
     # print(new_pos)
     for pos in new_pos:
+        to_promote = (pos[1] == max)
+        prom_flag = 'p' if to_promote else ''
         if pos[0] == piece.position[0] and tiles[pos][1] is None:
             advance_one = True
-            yield pos
+            yield pos + prom_flag
 
         elif (tiles[pos][1] is not None and
               tiles[pos][1].color != piece.color and
               pos[0] != piece.position[0]):
 
-            yield pos + 'x'
+            yield pos + 'x' + prom_flag
     if piece.moves == 0 and advance_one:
         double_spot = tiles[piece.position[0] + Data.rows[col_ind + 2 * direction]][1]
         if double_spot is None:
@@ -200,10 +203,8 @@ def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
     if no_moves:
         if checked:
             print('checkmate')
-            return
         else:
             print('stalemate')
-            return
     return moves
 
 # print(get_moves(Board(), 'black'))

@@ -10,15 +10,15 @@ class Game:
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         pygame.display.set_caption("Chess")
-        self.sprites = pygame.sprite.Group
         self.board = Board()
         self.white = Player(self.board, 'white')
         self.black = Player(self.board, 'black')
         # print(self.board.tiles)
         self.clock = pygame.time.Clock()
-        self.show_piece = False
-
+        self.has_piece = False
         self.player = self.white
+
+        self.show_choice = False
 
     def switch(self, player):
         return self.white if player == self.black else self.black
@@ -41,20 +41,26 @@ class Game:
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if event.type == pygame.MOUSEBUTTONUP:
-                    if self.show_piece:
-                        x = self.player.put_down()
-                        self.show_piece = False
-                        if x:
-                            self.player = self.switch(self.player)
-                            self.player.update_moves()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    self.show_piece = True if self.player.pickup() is not None else False
+                if not self.show_choice:
+                    if event.type == pygame.MOUSEBUTTONUP:
+                        if self.has_piece:
+                            try:
+                                x = self.player.put_down()
+                            except TypeError:
+                                self.show_choice = True
+                                break
+
+                            self.has_piece = False
+                            if x:
+                                self.player = self.switch(self.player)
+                                self.player.update_moves()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        self.has_piece = True if self.player.pickup() is not None else False
 
             self.screen.fill('blue')
             self.player.color_tiles()
             self.render_board()
-            if self.show_piece:
+            if self.has_piece and not self.show_choice:
                 self.player.move_lifted()
             self.clock.tick(60)
             pygame.display.update()
