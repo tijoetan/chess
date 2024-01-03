@@ -46,11 +46,6 @@ class Board:
     #         if tile[1] is not None:
     #             self.surface.blit(tile[1].image, tile[1].rect)
 
-    def copy_tiles(self):
-        copy = {}
-        for key in self.tiles:
-            piece = self.tiles[key][1]
-            copy[key] = [piece.type, piece.position, piece.color] if piece is not None else None
 
 
 class Tile:
@@ -79,10 +74,6 @@ class Tile:
 
 class Piece:
     def __init__(self, type: str, position: str, color: str, moves: object = 0, stat: object = False) -> None:
-        """
-
-        :rtype: object
-        """
         self.captured = False
         self.position = position
         self.color = color
@@ -97,7 +88,7 @@ class Piece:
         self.stat = stat
 
 
-def copy_tiles(tiles: dict[str:[Tile, Piece]]):
+def copy_tiles(tiles: dict[str:[Tile, Piece]]) -> dict[str:[Tile, Piece]]:
     copy = {}
     for tile_key in tiles:
         tile = tiles[tile_key][0]

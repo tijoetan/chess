@@ -10,8 +10,6 @@ class Player:
         self.board = board
         self.color = color
         self.held_piece = None
-        self.lopieces = self.get_col_pieces()
-        print(self.lopieces)
         self.surface = pygame.display.get_surface()
 
         # For moving pieces
@@ -50,13 +48,6 @@ class Player:
         self.held_piece = None
         # self.valid_positions = random.choice([*self.board.tiles])
         return did_move
-
-    def get_col_pieces(self):
-        piece_list = []
-        for piece in self.board.lopieces:
-            if piece.color == self.color:
-                piece_list.append(piece)
-        return piece_list
 
     def move_lifted(self) -> None:
         if self.held_piece is not None:

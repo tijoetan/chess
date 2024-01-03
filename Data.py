@@ -1,18 +1,23 @@
 import pygame
-
+from pygame import gfxdraw
 from files import find_piece_image
 
+print(pygame.color.THECOLORS['lightgreen'])
 WIDTH = 8 * 90
 HEIGHT = WIDTH
 # LIGHT = pygame.Color(240, 217, 181)
 # DARK = pygame.Color(181, 136, 99)
-LIGHT = pygame.Color(230, 210, 210)
-DARK = pygame.Color(90, 20, 35)
+LIGHT = pygame.Color(230, 220, 210)
+DARK = pygame.Color(160, 70, 75)
 
-DARK_HOVER = DARK.lerp('red', 0.3)
-LIGHT_HOVER = LIGHT.lerp('red', 0.3)
+DARK_HOVER = DARK.lerp('blue', 0.3)
+LIGHT_HOVER = LIGHT.lerp('blue', 0.3)
+
+DARK_ACCEPT = DARK.lerp('green', 0.7)
+LIGHT_ACCEPT = LIGHT.lerp('green',0.7)
 
 SIZE = int(WIDTH // 8)
+text_size = SIZE // 2
 
 cols = 'ABCDEFGH'
 rows = '87654321'
@@ -43,6 +48,12 @@ def load_and_scale(piece, color):
     return pygame.transform.smoothscale(image, (SIZE, SIZE))
 
 
+def circle(surface, x, y, radius, color):
+    # pygame.draw.circle(surface, color, (x,y), radius)
+    gfxdraw.aacircle(surface, int(x), int(y), int(radius), color)
+    gfxdraw.filled_circle(surface, int(x), int(y), int(radius), color)
+
+
 dark_square = pygame.Surface((SIZE, SIZE))
 dark_square.fill(DARK)
 
@@ -52,23 +63,23 @@ light_square.fill(LIGHT)
 dark_hover = pygame.Surface((SIZE, SIZE))
 dark_hover.fill(DARK_HOVER)
 light_hover = pygame.Surface((SIZE, SIZE))
-light_hover.fill(DARK_HOVER)
+light_hover.fill(LIGHT_HOVER)
 
 dark_accepted = pygame.Surface((SIZE, SIZE))
 dark_accepted.fill(DARK)
-pygame.draw.circle(dark_accepted, 'green', (SIZE // 2, SIZE // 2), SIZE // 6)
+circle(dark_accepted, SIZE // 2, SIZE // 2, SIZE // 6, DARK_ACCEPT)
 
 light_accepted = pygame.Surface((SIZE, SIZE))
 light_accepted.fill(LIGHT)
-pygame.draw.circle(light_accepted, 'lightgreen', (SIZE // 2, SIZE // 2), SIZE // 6)
+circle(light_accepted, SIZE // 2, SIZE // 2, SIZE // 6, LIGHT_ACCEPT)
 
 dark_capture = pygame.Surface((SIZE, SIZE))
 dark_capture.fill('green')
-pygame.draw.circle(dark_capture, DARK, (SIZE // 2, SIZE // 2), SIZE // 1.7)
+circle(dark_capture, SIZE // 2, SIZE // 2, SIZE // 1.7, DARK)
 
 light_capture = pygame.Surface((SIZE, SIZE))
 light_capture.fill('lightgreen')
-pygame.draw.circle(light_capture, LIGHT, (SIZE // 2, SIZE // 2), SIZE // 1.7)
+circle(light_capture, SIZE // 2, SIZE // 2, SIZE // 1.7, LIGHT)
 
 choice_bkg = pygame.Surface((SIZE * 4, SIZE))
 choice_bkg.fill('gray')

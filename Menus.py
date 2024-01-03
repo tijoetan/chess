@@ -9,7 +9,7 @@ class ChoiceBoard():
         self.rect = Data.choice_bkg.get_rect()
         self.rect.center = Data.WIDTH // 2, Data.HEIGHT // 2
         self.order = ['queen', 'rook', 'knight', 'bishop']
-        self.font = pygame.font.Font(size=30)
+        self.font = pygame.font.Font(size=Data.text_size)
         self.text = self.font.render('Choose promotion piece', True, 'black')
         self.screen = pygame.display.get_surface()
         # self.font = pygame.font.Font()

@@ -1,5 +1,5 @@
 from copy import copy
-
+from typing import Generator
 import Data
 from Board import Board, Piece, copy_tiles
 from move import apply_move
@@ -8,14 +8,16 @@ from move import apply_move
 def get_index(position: str) -> (int, int):
     return Data.cols.index(position[0]), Data.rows.index(position[1])
 
-def castle_intermediate_pos(pos):
+
+def castle_intermediate_pos(pos) -> str:
     col_index = get_index(pos)[0]
     # King beginning col_index is always 4
-    intermediate_col = Data.cols[2 + col_index//2] #if king, castle is at C, intermediate will return D and
-                                                    # if castle as at G intermediate is F
+    intermediate_col = Data.cols[2 + col_index // 2]  # if king, castle is at C, intermediate will return D and
+    # if castle as at G intermediate is F
     return intermediate_col + pos[1]
 
-def king_fn(piece: Piece, tiles: dict) -> list[str]:
+
+def king_fn(piece: Piece, tiles: dict) -> Generator[str]:
     row_ind, col_ind = get_index(piece.position)
     new_cols = [Data.rows[col_ind + i] for i in range(-1, 2) if col_ind + i in range(0, 8)]
     new_rows = [Data.cols[row_ind + i] for i in range(-1, 2) if row_ind + i in range(0, 8)]
@@ -46,14 +48,14 @@ def king_fn(piece: Piece, tiles: dict) -> list[str]:
                     break
 
 
-def queen_fn(piece: Piece, tiles: dict):
+def queen_fn(piece: Piece, tiles: dict) -> Generator[str]:
     for diagonal in bishop_fn(piece, tiles):
         yield diagonal
     for linear in rook_fn(piece, tiles):
         yield linear
 
 
-def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
+def pawn_fn(piece: Piece, tiles: dict) -> Generator[str]:
     row_ind, col_ind = get_index(piece.position)
     direction = -1 if piece.color == 'white' else 1
     order = Data.rows[::(-1 * direction)]
@@ -90,7 +92,7 @@ def pawn_fn(piece: Piece, tiles: dict) -> list[str]:
     # NEED en passant and promotion
 
 
-def bishop_fn(piece: Piece, tiles: dict) -> list[str]:
+def bishop_fn(piece: Piece, tiles: dict) -> Generator[str]:
     row_ind, col_ind = get_index(piece.position)
     vertical = [Data.rows[:col_ind][::-1], Data.rows[col_ind + 1:]]
     horizontal = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
@@ -106,42 +108,24 @@ def bishop_fn(piece: Piece, tiles: dict) -> list[str]:
                     yield direction[0] + direction[1]
 
 
-def knight_fn(piece: Piece, tiles: dict) -> list[str]:
-    row_ind, col_ind = get_index(piece.position)
-    verticals = [[Data.rows[col_ind + 2 * i] for i in range(-1, 2, 2) if col_ind + 2 * i in range(0, 8)]]
-    horizontals = [[Data.cols[row_ind + 2 * i] for i in range(-1, 2, 2) if row_ind + 2 * i in range(0, 8)]]
+def knight_fn(piece: Piece, tiles: dict) -> Generator[str]:
+    col_ind, row_ind = get_index(piece.position)
+    verticals = [Data.rows[row_ind + 2 * i] for i in range(-1, 2, 2) if row_ind + 2 * i in range(0, 8)]
+    left = [Data.cols[col_ind + 1] + v for v in verticals if col_ind + 1 in range(0, 8)]
+    right = [Data.cols[col_ind - 1] + v for v in verticals if col_ind - 1 in range(0, 8)]
 
-    for direction in verticals + horizontals:
-        for step in direction:
-            if direction in verticals:
-                left = Data.cols[row_ind + 1] + step if row_ind + 1 in range(0, 8) else None
-                right = Data.cols[row_ind - 1] + step if row_ind - 1 in range(0, 8) else None
-                if left is not None:
-                    if tiles[left][1] is None:
-                        yield left
-                    elif tiles[left][1].color != piece.color:
-                        yield left + 'x'
-                if right is not None:
-                    if tiles[right][1] is None:
-                        yield right
-                    elif tiles[right][1].color != piece.color:
-                        yield right + 'x'
-            else:
-                up = step + Data.rows[col_ind + 1] if col_ind + 1 in range(0, 8) else None
-                down = step + Data.rows[col_ind - 1] if col_ind - 1 in range(0, 8) else None
-                if up is not None:
-                    if tiles[up][1] is None:
-                        yield up
-                    elif tiles[up][1].color != piece.color:
-                        yield up + 'x'
-                if down is not None:
-                    if tiles[down][1] is None:
-                        yield down
-                    elif tiles[down][1].color != piece.color:
-                        yield down + 'x'
+    horizontals = [Data.cols[col_ind + 2 * i] for i in range(-1, 2, 2) if col_ind + 2 * i in range(0, 8)]
+    up = [h + Data.rows[row_ind + 1] for h in horizontals if row_ind + 1 in range(0, 8)]
+    down = [h + Data.rows[row_ind - 1] for h in horizontals if row_ind - 1 in range(0, 8)]
+
+    for pos in left + right + up + down:
+        if tiles[pos][1] is None:
+            yield pos
+        elif tiles[pos][1].color != piece.color:
+            yield pos + 'x'
 
 
-def rook_fn(piece: Piece, tiles: dict) -> list[str]:
+def rook_fn(piece: Piece, tiles: dict) -> Generator[str]:
     row_ind, col_ind = get_index(piece.position)
     vertical = [Data.rows[:col_ind][::-1], Data.rows[col_ind + 1:]]
     horizontal = [Data.cols[:row_ind][::-1], Data.cols[row_ind + 1:]]
@@ -210,7 +194,7 @@ def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
                                apply_move(test_board, candidate, test_piece)):
                     continue
                 if 'c' in candidate and castle_intermediate_pos(candidate[0:2]) not in moves[piece.position][0]:
-                    continue #relies on castle detection being last step and so all single moves should be in list
+                    continue  # relies on castle detection being last step and so all single moves should be in list
 
             moves[piece.position][0].append(candidate[0:2])
             moves[piece.position][1].append(candidate[2:])
