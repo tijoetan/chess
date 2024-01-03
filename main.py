@@ -1,5 +1,7 @@
 import sys
 
+import pygame
+
 from Board import Board, Piece
 from Data import *
 from Menus import ChoiceBoard, GameOver
@@ -58,52 +60,54 @@ class Game:
             self.screen.blit(text, text.get_rect(center=(WIDTH // 2, HEIGHT // 2)))
 
     def run(self):
-
+        font = pygame.Font(size=20)
         while True:
+            text = font.render(str(self.clock.get_fps()),True, 'red')
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     sys.exit()
-                if not self.show_choice:
-                    if event.type == pygame.MOUSEBUTTONUP:
-                        if self.has_piece:
-                            try:
-                                x = self.player.put_down()
-                            except KeyError:
-                                self.show_choice = True
-                                break
+                if not self.over:
+                    if not self.show_choice and not self.over:
+                        if event.type == pygame.MOUSEBUTTONUP:
+                            if self.has_piece:
+                                try:
+                                    x = self.player.put_down()
+                                except KeyError:
+                                    self.show_choice = True
+                                    break
 
-                            self.has_piece = False
-                            if x:
+                                self.has_piece = False
+                                if x:
+                                    self.switch_update()
+                    if event.type == pygame.MOUSEBUTTONDOWN:
+                        if self.show_choice:
+                            piece = self.choice_boards[self.player.color].get_piece()
+                            if piece:
+                                current_piece = self.player.held_piece
+                                current_piece: Piece or None
+                                self.board.tiles[current_piece.position][1] = Piece(piece, current_piece.position,
+                                                                                    current_piece.color,
+                                                                                    current_piece.moves + 1)
+                                self.has_piece = False
+                                self.player.held_piece = None
                                 self.switch_update()
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if self.show_choice:
-                        piece = self.choice_boards[self.player.color].get_piece()
-                        if piece:
-                            current_piece = self.player.held_piece
-                            current_piece: Piece or None
-                            self.board.tiles[current_piece.position][1] = Piece(piece, current_piece.position,
-                                                                                current_piece.color,
-                                                                                current_piece.moves + 1)
-                            self.has_piece = False
-                            self.player.held_piece = None
-                            self.switch_update()
-                            self.show_choice = False
-                    else:
-                        self.has_piece = True if self.player.pickup() is not None else False
+                                self.show_choice = False
+                        else:
+                            self.has_piece = True if self.player.pickup() is not None else False
 
             # self.screen.fill('')
             self.player.color_tiles()
             self.render_board()
             if self.has_piece and not self.show_choice:
                 self.player.move_lifted()
-            self.clock.tick(60)
+            self.clock.tick(1000)
+            #self.screen.blit(text, text.get_rect(center=(100, 100)))
             pygame.display.update()
 
 
 if __name__ == '__main__':
     game = Game()
-    if not game.over:
-        game.run()
-    else:
-        game.render_board()
+
+    game.run()
+

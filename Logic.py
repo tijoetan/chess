@@ -8,6 +8,12 @@ from move import apply_move
 def get_index(position: str) -> (int, int):
     return Data.cols.index(position[0]), Data.rows.index(position[1])
 
+def castle_intermediate_pos(pos):
+    col_index = get_index(pos)[0]
+    # King beginning col_index is always 4
+    intermediate_col = Data.cols[2 + col_index//2] #if king, castle is at C, intermediate will return D and
+                                                    # if castle as at G intermediate is F
+    return intermediate_col + pos[1]
 
 def king_fn(piece: Piece, tiles: dict) -> list[str]:
     row_ind, col_ind = get_index(piece.position)
@@ -199,9 +205,12 @@ def get_moves(board: Board, col: str) -> dict[Piece:list[str]]:
                 test_piece = copy(piece)
                 test_board[piece.position][1] = None
                 test_piece.position = candidate[0:2]
+
                 if check_check(test_piece if piece.type == 'king' else col_king,
                                apply_move(test_board, candidate, test_piece)):
                     continue
+                if 'c' in candidate and castle_intermediate_pos(candidate[0:2]) not in moves[piece.position][0]:
+                    continue #relies on castle detection being last step and so all single moves should be in list
 
             moves[piece.position][0].append(candidate[0:2])
             moves[piece.position][1].append(candidate[2:])

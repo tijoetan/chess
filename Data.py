@@ -2,10 +2,12 @@ import pygame
 
 from files import find_piece_image
 
-WIDTH = 8 * 60
+WIDTH = 8 * 90
 HEIGHT = WIDTH
-LIGHT = pygame.Color(240, 217, 181)
-DARK = pygame.Color(181, 136, 99)
+# LIGHT = pygame.Color(240, 217, 181)
+# DARK = pygame.Color(181, 136, 99)
+LIGHT = pygame.Color(230, 210, 210)
+DARK = pygame.Color(90, 20, 35)
 
 DARK_HOVER = DARK.lerp('red', 0.3)
 LIGHT_HOVER = LIGHT.lerp('red', 0.3)
